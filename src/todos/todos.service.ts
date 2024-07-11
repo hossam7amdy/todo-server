@@ -3,15 +3,16 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo } from './schemas/todo.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class TodosService {
   constructor(@InjectModel(Todo.name) private todoModal: Model<Todo>) {}
 
-  async create(createTodoDto: CreateTodoDto): Promise<Todo> {
+  async create(userId: Types.ObjectId, todo: CreateTodoDto): Promise<Todo> {
     const createdTodo = new this.todoModal({
-      ...createTodoDto,
+      ...todo,
+      userId,
       done: false,
       createdAt: new Date(),
     });
@@ -19,12 +20,12 @@ export class TodosService {
     return createdTodo.save();
   }
 
-  async findAll(userId: string): Promise<Todo[]> {
-    return this.todoModal.find({ userId });
+  async findAll(userId: Types.ObjectId): Promise<Todo[]> {
+    return this.todoModal.find({ userId }).exec();
   }
 
-  async findOne(id: string): Promise<Todo> {
-    const todo = await this.todoModal.findById(id).exec();
+  async findOne(id: string, userId: Types.ObjectId): Promise<Todo> {
+    const todo = await this.todoModal.findOne({ _id: id, userId }).exec();
 
     if (!todo) {
       throw new NotFoundException('Todo not found');
@@ -33,18 +34,22 @@ export class TodosService {
     return todo;
   }
 
-  async update(id: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
-    await this.findOne(id);
+  async update(
+    id: string,
+    userId: Types.ObjectId,
+    todo: UpdateTodoDto,
+  ): Promise<Todo> {
+    await this.findOne(id, userId);
 
-    await this.todoModal.updateOne({ _id: id }, updateTodoDto);
+    await this.todoModal.updateOne({ _id: id }, todo).exec();
 
-    return this.findOne(id);
+    return this.findOne(id, userId);
   }
 
-  async remove(id: string): Promise<Todo> {
-    const todo = await this.findOne(id);
+  async remove(id: string, userId: Types.ObjectId): Promise<Todo> {
+    const todo = await this.findOne(id, userId);
 
-    await this.todoModal.deleteOne({ _id: id });
+    await this.todoModal.deleteOne({ _id: id }).exec();
 
     return todo;
   }
