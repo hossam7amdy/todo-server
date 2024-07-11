@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo } from './schemas/todo.schema';
@@ -19,32 +19,26 @@ export class TodosService {
     return createdTodo.save();
   }
 
-  async findAll(): Promise<Todo[]> {
-    return this.todoModal.find();
+  async findAll(userId: string): Promise<Todo[]> {
+    return this.todoModal.find({ userId });
   }
 
   async findOne(id: string): Promise<Todo> {
-    const todo = await this.todoModal.findById(id);
+    const todo = await this.todoModal.findById(id).exec();
 
     if (!todo) {
-      throw new Error('Todo not found');
+      throw new NotFoundException('Todo not found');
     }
 
-    return todo.toObject({
-      versionKey: false,
-      transform: (doc, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-      },
-    });
+    return todo;
   }
 
   async update(id: string, updateTodoDto: UpdateTodoDto): Promise<Todo> {
-    const oldTodo = await this.findOne(id);
+    await this.findOne(id);
 
     await this.todoModal.updateOne({ _id: id }, updateTodoDto);
 
-    return { ...oldTodo, ...updateTodoDto };
+    return this.findOne(id);
   }
 
   async remove(id: string): Promise<Todo> {
