@@ -10,6 +10,7 @@ import configuration from './config/configuration';
   imports: [
     TodosModule,
     ConfigModule.forRoot({
+      isGlobal: true,
       load: [configuration],
     }),
     MongooseModule.forRoot(configuration().database.uri),
