@@ -1,6 +1,7 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -15,7 +16,9 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req) {
-    return this.authService.googleLogin(req.user);
+  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+    const { accessToken } = await this.authService.googleLogin(req.user);
+
+    return res.redirect(`${process.env.FRONTEND_URL}/?token=${accessToken}`);
   }
 }

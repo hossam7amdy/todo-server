@@ -14,7 +14,7 @@ export class AuthService {
     return this.userService.findOneByEmail(email);
   }
 
-  async googleLogin(user: any): Promise<any> {
+  async googleLogin(user: any): Promise<{ accessToken: string }> {
     let existingUser = await this.userService.findOneByEmail(user.email);
     if (!existingUser) {
       existingUser = await this.userService.create(user);
@@ -22,7 +22,7 @@ export class AuthService {
 
     const payload = { email: existingUser.email, sub: existingUser._id };
     return {
-      access_token: this.jwtService.sign(payload, {
+      accessToken: this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET,
       }),
     };
