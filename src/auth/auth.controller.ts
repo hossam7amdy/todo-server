@@ -20,6 +20,6 @@ export class AuthController {
     const { accessToken } = await this.authService.googleLogin(req.user);
 
     res.cookie('jwt', accessToken, { httpOnly: true });
-    return res.redirect(`${process.env.FRONTEND_URL}`);
+    return res.redirect(`${process.env.FRONTEND_URL}/home`);
   }
 }
