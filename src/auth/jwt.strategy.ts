@@ -9,9 +9,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
       jwtFromRequest: (req: Request) => {
+        const cookie = req.cookies['jwt'];
         const bearer = req.headers.authorization?.split(' ')[1];
-        if (!req || !req.cookies || bearer) return null;
-        return req.cookies['jwt'] || bearer;
+
+        const jwtToken = cookie || bearer;
+
+        return jwtToken ?? null;
       },
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET,

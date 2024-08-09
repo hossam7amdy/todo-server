@@ -22,7 +22,7 @@ export class AuthController {
     res.cookie('jwt', accessToken, { httpOnly: true });
 
     const redirectUrl: string =
-      req.headers.origin || req.headers.referer || process.env.FRONTEND_URL;
+      req.headers.origin || req.headers.referer || process.env.APP_URL;
 
     return res.redirect(`${redirectUrl}?success=true&token=${accessToken}`);
   }
