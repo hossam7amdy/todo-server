@@ -5,9 +5,7 @@ services:
     container_name: mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    networks:
-      - todo-net
+      MONGO_INITDB_ROOT_PASSWORD: pass
 
   mongo-express:
     image: mongo-express
@@ -17,27 +15,22 @@ services:
       - 8081:8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_URL: mongodb://root:pass@mongo:27017/
       ME_CONFIG_BASICAUTH: false
-    networks:
-      - todo-net
 
-  backend:
+  server:
     build:
       context: ./
       dockerfile: Dockerfile
     restart: always
-    container_name: todo-backend
+    container_name: todo-server
+    image: hossam7amdy/todo-server
     ports:
       - 3000:3000
     environment:
-      MONGO_URI: mongodb://root:example@mongo:27017/
+      MONGO_URI: mongodb://root:pass@mongo:27017/
+    env_file:
+      - .env
     depends_on:
       - mongo
-    networks:
-      - todo-net
-
-networks:
-  todo-net:
-    driver: bridge

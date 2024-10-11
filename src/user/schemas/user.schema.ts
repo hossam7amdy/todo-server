@@ -17,6 +17,12 @@ export class User extends Document {
 
   @Prop()
   accessToken: string;
+
+  @Prop()
+  password?: string;
+
+  @Prop({ default: false })
+  isEmailVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,29 +1,79 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+  Body,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiQuery,
+  ApiBody,
+  ApiExcludeEndpoint,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import type { Response, Request } from 'express';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { RequestResetDto } from './dto/request-reset.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async googleAuth(@Req() req: Request) {
+  async googleAuth(@Req() _req: Request) {
     // initiates the Google OAuth2 login flow
   }
 
   @Get('google/callback')
+  @ApiExcludeEndpoint()
   @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req, @Res() res: Response) {
+  async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
     const { accessToken } = await this.authService.googleLogin(req.user);
 
     res.cookie('jwt', accessToken, { httpOnly: true });
 
     const redirectUrl: string =
-      req.headers.origin || req.headers.referer || process.env.APP_URL;
+      req.headers.origin || req.headers.referer || process.env.FRONTEND_URL;
 
     return res.redirect(`${redirectUrl}?success=true&token=${accessToken}`);
+  }
+
+  @Post('register')
+  @ApiBody({ type: RegisterDto })
+  async register(@Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto);
+  }
+
+  @Post('login')
+  @ApiBody({ type: LoginDto })
+  async login(@Body() loginDto: LoginDto) {
+    return this.authService.login(loginDto.email, loginDto.password);
+  }
+
+  @Get('verify-email')
+  @ApiQuery({ name: 'token', required: true })
+  async verifyEmail(@Query('token') token: string) {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Post('request-reset')
+  @ApiBody({ type: RequestResetDto })
+  async requestPasswordReset(@Body() body: RequestResetDto) {
+    return this.authService.requestPasswordReset(body.email);
+  }
+
+  @Post('reset-password')
+  @ApiBody({ type: ResetPasswordDto })
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body.token, body.password);
   }
 }
