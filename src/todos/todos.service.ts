@@ -25,7 +25,7 @@ export class TodosService {
   }
 
   async findOne(id: string, userId: Types.ObjectId): Promise<Todo> {
-    const todo = await this.todoModal.findOne({ _id: id, userId }).exec();
+    const todo = await this.todoModal.findOne({ _id: { $eq: id }, userId }).exec();
 
     if (!todo) {
       throw new NotFoundException('Todo not found');
@@ -41,7 +41,7 @@ export class TodosService {
   ): Promise<Todo> {
     await this.findOne(id, userId);
 
-    await this.todoModal.updateOne({ _id: id }, todo).exec();
+    await this.todoModal.updateOne({ _id: { $eq: id } }, todo).exec();
 
     return this.findOne(id, userId);
   }
@@ -49,7 +49,7 @@ export class TodosService {
   async remove(id: string, userId: Types.ObjectId): Promise<Todo> {
     const todo = await this.findOne(id, userId);
 
-    await this.todoModal.deleteOne({ _id: id }).exec();
+    await this.todoModal.deleteOne({ _id: { $eq: id } }).exec();
 
     return todo;
   }
