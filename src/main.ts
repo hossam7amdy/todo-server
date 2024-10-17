@@ -34,6 +34,10 @@ async function bootstrap() {
     .setDescription('API documentation for a todo app')
     .setVersion('1.0')
     .addServer('http://localhost:3000', 'Local server')
+    .addServer(
+      'http://ec2-16-171-24-86.eu-north-1.compute.amazonaws.com:8080',
+      'Development server',
+    )
     .addBearerAuth() // Enable BearerAuth (for JWT tokens)
     .addCookieAuth('jwt') // Enable CookieAuth
     .build();
