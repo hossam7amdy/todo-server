@@ -1,5 +1,5 @@
 export default (link: string) =>
-    `
+  `
   <!DOCTYPE html>
   <html lang="en">
   <head>

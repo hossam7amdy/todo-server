@@ -19,11 +19,7 @@ export class MailerService {
     });
   }
 
-  async sendMail(
-    to: string,
-    subject: string,
-    html: string,
-  ): Promise<void> {
+  async sendMail(to: string, subject: string, html: string): Promise<void> {
     const mailOptions = {
       from: `"Todo App" <${process.env.EMAIL_USER}>`,
       to,
