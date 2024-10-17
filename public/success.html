@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>success - Todo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 25px auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .header img {
+        width: 100px;
+      }
+      .content {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .success {
+        color: #28a745;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px 0;
+        font-size: 12px;
+        color: #888888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <h1>Operation successful</h1>
+        <p id="success" class="success">
+          Your request has been processed successfully.
+        </p>
+      </div>
+      <div class="footer">
+        <p>All rights reserved.</p>
+      </div>
+    </div>
+
+    <script>
+      const error = document.getElementById('success');
+      const params = new URLSearchParams(window.location.search);
+      const message = params.get('message');
+      if (message) {
+        error.textContent = message;
+      }
+    </script>
+  </body>
+</html>

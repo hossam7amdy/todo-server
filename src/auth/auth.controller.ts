@@ -13,6 +13,7 @@ import {
   ApiQuery,
   ApiBody,
   ApiExcludeEndpoint,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import type { Response, Request } from 'express';
@@ -21,6 +22,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { RequestResetDto } from './dto/request-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -59,10 +61,24 @@ export class AuthController {
     return this.authService.login(loginDto.email, loginDto.password);
   }
 
+  @Post('logout')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async logout(@Res() res: Response) {
+    res.clearCookie('jwt');
+    return { message: 'Logout successful' };
+  }
+
   @Get('verify-email')
   @ApiQuery({ name: 'token', required: true })
   async verifyEmail(@Query('token') token: string) {
-    return this.authService.verifyEmail(token);
+    return await this.authService.verifyEmail(token);
+  }
+
+  @Post('resend-verification-email')
+  @ApiBody({ type: RequestResetDto })
+  async resendVerificationEmail(@Body() body: RequestResetDto) {
+    return this.authService.resendVerificationEmail(body.email);
   }
 
   @Post('request-reset')
