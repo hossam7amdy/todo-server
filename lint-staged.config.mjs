@@ -1,3 +1,3 @@
 export default {
-  '*': ['npm run format', 'npm run lint'],
+  'src/**/*.{ts, spec.ts}': ['npm run format', 'npm run lint'],
 };
