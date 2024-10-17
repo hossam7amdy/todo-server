@@ -1,5 +1,5 @@
 export default (link: string) =>
-    `
+  `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -58,7 +58,7 @@ export default (link: string) =>
             <div class="content">
                 <h1>Reset Your Password</h1>
                 <p>Please click the button below to reset your password.</p>
-                <a href="${link}" class="button">Reset Password</a>
+                <a target="_blank" href="${link}" class="button">Reset Password</a>
             </div>
             <div class="footer">
                 <p>If you did not reset for this account, you can ignore this email.</p>

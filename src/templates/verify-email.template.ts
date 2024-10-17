@@ -58,7 +58,7 @@ export default (link: string) =>
           <div class="content">
               <h1>Verify Your Email Address</h1>
               <p>Thank you for signing up! Please click the button below to verify your email address.</p>
-              <a href="${link}" class="button">Verify Email</a>
+              <a target="_blank" href="${link}" class="button">Verify Email</a>
           </div>
           <div class="footer">
               <p>If you did not sign up for this account, you can ignore this email.</p>

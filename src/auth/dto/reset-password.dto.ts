@@ -17,4 +17,12 @@ export class ResetPasswordDto {
     minSymbols: 1,
   })
   password: string;
+
+  @ApiProperty({ example: 'newPass123' })
+  @IsString()
+  confirmPassword: string;
+
+  validate() {
+    return this.password === this.confirmPassword;
+  }
 }

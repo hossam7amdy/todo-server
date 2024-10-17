@@ -9,8 +9,8 @@ import configuration, { Configuration } from 'src/config/configuration';
 
 @Injectable()
 export class AuthService {
-  private readonly frontendUrl: string;
   private readonly jwt: Configuration['auth']['jwt'];
+  private readonly serverUrl = configuration().serverUrl;
 
   constructor(
     private readonly jwtService: JwtService,
@@ -18,7 +18,6 @@ export class AuthService {
     private readonly mailerService: MailerService,
   ) {
     this.jwt = configuration().auth.jwt;
-    this.frontendUrl = configuration().frontendUrl;
   }
 
   async validateUser(email: string): Promise<User | null> {
@@ -84,11 +83,36 @@ export class AuthService {
       { secret: this.jwt.verifySecret, expiresIn: '24h' },
     );
 
-    const verificationUrl = `${this.frontendUrl}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${this.serverUrl}/api/auth/verify-email?token=${verificationToken}`;
 
-    await this.mailerService.sendVerificationEmail(newUser.email, verificationUrl);
+    await this.mailerService.sendVerificationEmail(
+      newUser.email,
+      verificationUrl,
+    );
 
     return { message: 'User registered. Please check your email to verify.' };
+  }
+
+  async resendVerificationEmail(email: string) {
+    const user = await this.userService.findOneByEmail(email);
+    if (!user) {
+      throw new BadRequestException('User with this email does not exist');
+    }
+
+    if (user.isEmailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    const verificationToken = this.jwtService.sign(
+      { email: user.email },
+      { secret: this.jwt.verifySecret, expiresIn: '24h' },
+    );
+
+    const verificationUrl = `${this.serverUrl}/api/auth/verify-email?token=${verificationToken}`;
+
+    await this.mailerService.sendVerificationEmail(user.email, verificationUrl);
+
+    return { message: 'Verification email sent.' };
   }
 
   async requestPasswordReset(email: string) {
@@ -102,12 +126,9 @@ export class AuthService {
       { secret: this.jwt.resetSecret, expiresIn: '1h' },
     );
 
-    const resetUrl = `${this.frontendUrl}/reset-password?token=${resetToken}`;
+    const resetUrl = `${this.serverUrl}/reset-password.html?token=${resetToken}`;
 
-    await this.mailerService.sendPasswordResetEmail(
-      user.email,
-      resetUrl,
-    );
+    await this.mailerService.sendPasswordResetEmail(user.email, resetUrl);
 
     return { message: 'Password reset email sent.' };
   }
