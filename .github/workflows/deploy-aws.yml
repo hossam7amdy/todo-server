@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_TAG: ${{ github.sha }}
-  IMAGE_NAME: hossam7amdy/todo-server
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/todo-server
   CONTAINER_NAME: todo-server
 
 jobs:
