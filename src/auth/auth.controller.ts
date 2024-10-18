@@ -23,10 +23,13 @@ import { LoginDto } from './dto/login.dto';
 import { RequestResetDto } from './dto/request-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import configuration from 'src/config/configuration';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
+  private readonly clientUrl = configuration().clientUrl;
+
   constructor(private readonly authService: AuthService) {}
 
   @Get('google')
@@ -44,7 +47,7 @@ export class AuthController {
     res.cookie('jwt', accessToken, { httpOnly: true });
 
     const redirectUrl: string =
-      req.headers.origin || req.headers.referer || process.env.FRONTEND_URL;
+      req.headers.origin || req.headers.referer || this.clientUrl;
 
     return res.redirect(`${redirectUrl}?success=true&token=${accessToken}`);
   }
@@ -64,9 +67,16 @@ export class AuthController {
   @Post('logout')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  async logout(@Res() res: Response) {
-    res.clearCookie('jwt');
-    return { message: 'Logout successful' };
+  async logout(
+    @Res() res: Response,
+    @Req() req: Request & { user: { userId: string } },
+  ) {
+    res.clearCookie('jwt', { httpOnly: true });
+
+    const redirectUrl: string =
+      req.headers.origin || req.headers.referer || this.clientUrl;
+
+    return res.redirect(`${redirectUrl}?success=true`);
   }
 
   @Get('verify-email')

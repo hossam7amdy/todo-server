@@ -17,7 +17,7 @@ export class UserService {
   }
 
   async findById(id: string): Promise<User | undefined> {
-    return this.userModel.findOne({ _id: id }, { password: 0, __v: 0 }).exec();
+    return await this.userModel.findOne({ _id: id }).exec();
   }
 
   async update(id: string, user: Partial<User>): Promise<User> {

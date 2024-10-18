@@ -30,14 +30,22 @@ export class MailerService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  async sendVerificationEmail(to: string, link: string): Promise<void> {
-    const html = verifyEmailTemplate(link);
+  async sendVerificationEmail(
+    to: string,
+    name: string,
+    actionLink: string,
+  ): Promise<void> {
+    const html = verifyEmailTemplate(name, actionLink);
 
     await this.sendMail(to, 'Verify your email address', html);
   }
 
-  async sendPasswordResetEmail(to: string, link: string): Promise<void> {
-    const html = resetPasswordTemplate(link);
+  async sendPasswordResetEmail(
+    to: string,
+    name: string,
+    actionLink: string,
+  ): Promise<void> {
+    const html = resetPasswordTemplate(name, actionLink);
 
     await this.sendMail(to, 'Reset your password', html);
   }

@@ -16,7 +16,7 @@ import { UserModule } from './user/user.module';
       isGlobal: true,
       load: [configuration],
     }),
-    MongooseModule.forRoot(configuration().database.uri),
+    MongooseModule.forRoot(configuration().database.url),
   ],
   controllers: [AppController],
 })

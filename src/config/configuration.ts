@@ -22,8 +22,9 @@ const validateConfiguration = (
 const configuration = () => ({
   port: _parseInt(process.env.PORT, 3000),
   serverUrl: process.env.SERVER_URL || 'http://localhost:3000',
+  clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
   database: {
-    uri: process.env.MONGO_URI,
+    url: process.env.DATABASE_URL,
   },
 
   auth: {

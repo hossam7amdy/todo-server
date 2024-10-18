@@ -32,7 +32,7 @@ RUN npm run build
 
 ENV NODE_ENV production
 
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
 USER node
 
@@ -44,5 +44,6 @@ FROM node:20-alpine As production
 
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build /usr/src/app/public ./public
 
 CMD [ "node", "dist/main.js" ]

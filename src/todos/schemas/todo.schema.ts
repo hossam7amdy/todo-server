@@ -4,6 +4,7 @@ import { HydratedDocument, Types } from 'mongoose';
 export type TodoDocument = HydratedDocument<Todo>;
 
 @Schema({
+  timestamps: true,
   toJSON: {
     transform: function (_doc, ret) {
       ret.id = ret._id;
